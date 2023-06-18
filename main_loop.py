@@ -5,39 +5,15 @@ import os
 import signal
 from asyncio import Queue
 from evolve_instruct_code import RandomSystemPrompt
+from data_input import load_code_alpaca_20k
 
 random_system_prompter = RandomSystemPrompt()
-
-
-def parse_json_instructions(data):
-    instructions_list = []
-
-    for entry in data:
-        instruction = entry.get('instruction', '')
-        input_data = entry.get('input', '')
-        
-        if input_data:
-            instructions_list.append(f"{instruction} {input_data}")
-        else:
-            instructions_list.append(instruction)
-
-    return instructions_list
-
-with open('data/code_alpaca_20k.json', 'r') as f:
-    json_data =  json.loads(f.read())
-
-
-items = parse_json_instructions(json_data) # the items we want to send network requests to
-
-# import random
-# for instruction in random.choices(items, k=10):
-#     print(instruction)
-# exit(0)
 
 num_retries = 3
 pause_between_retries = 5  # seconds
 max_concurrent_requests = 50  # Set the maximum concurrent requests
 
+items = load_code_alpaca_20k()
 responses = []
 processed_items = []
 

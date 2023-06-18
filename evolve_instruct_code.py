@@ -1,3 +1,4 @@
+import random
 from openai_gpt_request import send_prompt
 
 class AddConstraints:
@@ -78,6 +79,34 @@ class TimeSpaceComplexity:
             print(e)
             raise e
         return response
+
+
+class RandomSystemPrompt:
+    def __init__(self) -> None:
+        self.prompts = []
+        with open('code_prompts/add_constraints.txt', 'r') as f:
+            prompt = f.read()
+            prompt = prompt.replace(r'{instruction}', '')
+            self.prompts.append(prompt)
+        with open('code_prompts/concretizing.txt', 'r') as f:
+            prompt = f.read()
+            prompt = prompt.replace(r'{instruction}', '')
+            self.prompts.append(prompt)
+        with open('code_prompts/increasing_reasoning_steps.txt', 'r') as f:
+            prompt = f.read()
+            prompt = prompt.replace(r'{instruction}', '')
+            self.prompts.append(prompt)                    
+        with open('code_prompts/misleading.txt', 'r') as f:
+            prompt = f.read()
+            prompt = prompt.replace(r'{instruction}', '')
+            self.prompts.append(prompt)    
+        with open('code_prompts/time_space_complexity.txt', 'r') as f:
+            prompt = f.read()
+            prompt = prompt.replace(r'{instruction}', '')
+            self.prompts.append(prompt)
+
+    def __call__(self) -> str:
+        return random.choice(self.prompts)
 
 
 if __name__ == '__main__':

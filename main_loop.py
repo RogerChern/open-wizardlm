@@ -3,36 +3,8 @@ import aiohttp
 import json
 import os
 import signal
-import random
 from asyncio import Queue
-
-
-class RandomSystemPrompt:
-    def __init__(self) -> None:
-        self.prompts = []
-        with open('code_prompts/add_constraints.txt', 'r') as f:
-            prompt = f.read()
-            prompt = prompt.replace(r'{instruction}', '')
-            self.prompts.append(prompt)
-        with open('code_prompts/concretizing.txt', 'r') as f:
-            prompt = f.read()
-            prompt = prompt.replace(r'{instruction}', '')
-            self.prompts.append(prompt)
-        with open('code_prompts/increasing_reasoning_steps.txt', 'r') as f:
-            prompt = f.read()
-            prompt = prompt.replace(r'{instruction}', '')
-            self.prompts.append(prompt)                    
-        with open('code_prompts/misleading.txt', 'r') as f:
-            prompt = f.read()
-            prompt = prompt.replace(r'{instruction}', '')
-            self.prompts.append(prompt)    
-        with open('code_prompts/time_space_complexity.txt', 'r') as f:
-            prompt = f.read()
-            prompt = prompt.replace(r'{instruction}', '')
-            self.prompts.append(prompt)
-
-    def __call__(self) -> str:
-        return random.choice(self.prompts)
+from evolve_instruct_code import RandomSystemPrompt
 
 random_system_prompter = RandomSystemPrompt()
 

@@ -144,9 +144,9 @@ async def main():
 
     async with aiohttp.ClientSession() as session:
         tasks = [asyncio.create_task(send_request(session, item, queue, semaphore)) for item in items]
-        await asyncio.gather(*tasks, return_exceptions=True)
         # create write_to_file task
         file_writer = asyncio.create_task(write_to_file(queue))
+        await asyncio.gather(*tasks, return_exceptions=True)
         await queue.join()  # Wait for all items in the queue to be processed.
         await queue.put((None, None))
         await file_writer

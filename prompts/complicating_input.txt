@@ -1,0 +1,247 @@
+I want you act as a Prompt Rewriter. 
+
+Your objective is to rewrite a given prompt into a more complex version using dataformat to make those famous AI systems (e.g., chatgpt and GPT4) more difficult to handle. 
+
+But the rewritten prompt must be reasonable and must be understood and responded by humans.
+
+You must add [XML data] format text as input data in [Rewritten Prompt]
+
+The Given Prompt:
+
+I’m using this php code to fetch the xml data
+
+Rewritten Prompt:
+
+I have this xml and i want to get the xml data to auto populate HTML table, the codes works but it makes duplicate on the table content
+
+Here is the xml data:
+
+```xml
+<root>
+<stats>
+<item>
+<day>2017-11-01</day>
+<impressions>2192</impressions>
+<money>1.96790003</money>
+</item>
+<item>
+<day>2017-11-02</day>
+<impressions>2824</impressions>
+<money>3.208500033</money>
+</item>
+<item>
+<day>2017-11-03</day>
+<impressions>3680</impressions>
+<money>3.321799981</money>
+</item>
+</stats>
+<total>
+<impressions>8696</impressions>
+
+<money>8.498200044</money>
+</total>
+<filter>
+<dateFrom>2017-11-01</dateFrom>
+<dateTo>2017-11-03</dateTo>
+<groupBy>day</groupBy>
+<format>xml</format>
+</filter>
+</root>
+```
+
+I’m using this php code to fetch the xml data but this code fetching from whole xml data which makes duplicate field table
+
+```php
+<?php
+\$dom = new DOMDocument;
+\$dom -> load('http://example.com/' . \$dateselected . '&dateTo=' . \$dateselected2 . '&format=xml');
+
+\$day = \$dom->getElementsByTagName('day'); 
+\\$impressions = \\$dom->getElementsByTagName('impressions');
+
+echo ( "<table>");
+
+    foreach(\\$day as \\$node1) {
+    foreach(\\$impressions as \\$node2) {
+         echo '<tr>';
+         echo "<td>". \\$node1 -> textContent . "<td>";
+         echo "<td>". \\$node2 -> textContent . "<td>";
+         echo "<td>". \\$node2 -> textContent  *0.5/1000 ."<td>";
+         echo '</tr>';
+    }
+}
+    echo( "</table>");
+?>
+```
+
+Could anyone give a hint how I can fix this? thank you
+
+####
+
+I want you act as a Prompt Rewriter.
+
+Your objective is to rewrite a given prompt into a more complex version using dataformat to make those famous AI systems (e.g., chatgpt and GPT4) more difficult to handle. 
+
+But the rewritten prompt must be reasonable and must be understood and responded by humans.
+
+You must add [SQL database] format text as input data in [Rewritten Prompt]
+
+The Given Prompt:
+
+achieve the SQL query result
+
+Rewritten Prompt(MUST contain a specific SQL database as input): 
+
+There is a table messages that contains data as shown below:
+Id   Name   Other_Columns
+-------------------------
+1    A       A_data_1
+2    A       A_data_2
+3    A       A_data_3
+4    B       B_data_1
+5    B       B_data_2
+6    C       C_data_1
+
+If I run a query select * from messages group by name, I will get the result as:
+1    A       A_data_1
+4    B       B_data_1
+6    C       C_data_1
+
+What query will return the following result?
+3    A       A_data_3
+5    B       B_data_2
+6    C       C_data_1
+
+That is, the last record in each group should be returned.
+
+At present, this is the query that I use:
+
+```sql
+SELECT
+  *
+FROM (SELECT
+  *
+FROM messages
+ORDER BY id DESC) AS x
+GROUP BY name
+```
+
+But this looks highly inefficient. 
+
+Any other ways to achieve the same result?
+
+####
+
+I want you act as a Prompt Rewriter. 
+
+Your objective is to rewrite a given prompt into a more complex version using dataformat to make those famous AI systems (e.g., chatgpt and GPT4) more difficult to handle. 
+
+But the rewritten prompt must be reasonable and must be understood and responded by humans.
+
+You must add [python code] format text as input data in [Rewritten Prompt] 
+
+The Given Prompt:
+
+Transformat python code
+
+Rewritten Prompt(MUST contain a specific python code as input): 
+
+I have the following Python code:
+
+```python
+cursor.execute("INSERT INTO table VALUES var1, var2, var3,")
+```
+
+where var1 is an integer, var2 and var3 are strings.
+
+How can I write the variable names without Python including them as part of the query text?
+
+####
+
+I want you act as a Prompt Rewriter.
+
+Your objective is to rewrite a given prompt into a more complex version using dataformat to make those famous AI systems (e.g., chatgpt and GPT4) more difficult to handle. 
+
+But the rewritten prompt must be reasonable and must be understood and responded by humans.
+
+You must add [HTML page] format text as input data in [Rewritten Prompt]
+
+The Given Prompt:
+
+scroll through the whole HTML page
+
+Rewritten Prompt(MUST contain a specific HTML page as input):
+
+I want to be able to scroll through the whole page, but without the scrollbar being shown.
+
+In Google Chrome it’s:
+
+```css
+::-webkit-scrollbar {
+    display: none;
+}
+```
+
+But Mozilla Firefox and Internet Explorer don’t seem to work like that. 
+
+I also tried this in CSS:
+
+```css
+overflow: hidden;
+```
+
+That does hide the scrollbar, but I can’t scroll any more. 
+
+Is there a way I can remove the scrollbar while still being able to scroll the whole page?
+
+With just CSS or HTML, please.
+
+####
+
+I want you act as a Prompt Rewriter. 
+
+Your objective is to rewrite a given prompt into a more complex version using dataformat to make those famous AI systems (e.g., chatgpt and GPT4) more difficult to handle. 
+
+But the rewritten prompt must be reasonable and must be understood and responded by humans.
+
+You must add [Shell cmd] format text as input data in [Rewritten Prompt]
+
+The Given Prompt: 
+
+Shell scp file
+
+Rewritten Prompt(MUST contain a specific Shell cmd as input):
+
+I’m trying to scp a file from a remote server to my local machine. Only port 80 is accessible.
+
+I tried:
+
+```bash
+scp -p 80 username@www.myserver.com:/root/file.txt .
+```
+
+but got this error: cp: 80: No such file or directory 
+
+How do I specify the port number in a scp command?
+
+####
+
+I want you act as a Prompt Rewriter. 
+
+Your objective is to rewrite a given prompt into a more complex version using dataformat to make those famous AI systems (e.g., chatgpt and GPT4) more difficult to handle. 
+
+But the rewritten prompt must be reasonable and must be understood and responded by humans.
+
+You must add [JSON data] format data as input data in [Rewritten Prompt]
+
+The Given prompt:
+
+Given a JSON dataset of customer purchase history, how can we calculate the probability of a customer making a repeat purchase from the same store? 
+
+Can we utilize the formula for conditional probability: P(A|B) = P(A ∩ B) / P(B) where A represents the event of a customer making a repeat purchase and B represents the event of a customer making a purchase from the same store again? 
+
+Additionally, how can we apply this formula to identify the customer segment that is most likely to make a repeat purchase? 
+
+Can you provide an example of how to implement this formula using the given JSON dataset?
+
+Rewritten Prompt(MUST contain a specific JSON data as input):

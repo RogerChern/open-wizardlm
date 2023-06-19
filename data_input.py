@@ -37,7 +37,7 @@ def load_evolved_instruction():
     return items
 
 
-def load_dataset(path_or_name, max_num_item):
+def load_dataset(path_or_name, max_num_item=9999999999):
     if path_or_name in ['code_alpaca_20k', 'code_alpaca', 'codealpaca', 'codegen_instruct', 'codegen-instruct']:
         return load_code_alpaca_20k()[:max_num_item]
     elif os.path.exists(path_or_name):

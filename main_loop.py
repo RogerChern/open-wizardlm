@@ -5,7 +5,7 @@ import os
 import signal
 from asyncio import Queue
 from evolve_instruct_code import RandomSystemPrompt
-from data_input import load_code_alpaca_20k
+from data_input import load_dataset
 
 random_system_prompter = RandomSystemPrompt()
 
@@ -13,7 +13,7 @@ num_retries = 3
 pause_between_retries = 5  # seconds
 max_concurrent_requests = 50  # Set the maximum concurrent requests
 
-items = load_code_alpaca_20k()
+items = load_dataset('code_alpaca_20k')
 responses = []
 processed_items = []
 

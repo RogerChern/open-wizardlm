@@ -25,7 +25,7 @@ def load_code_alpaca_20k():
 
 
 def load_codgen_instruct():
-    with open('data/codegen-instruction.json', 'r') as f:
+    with open('data/codegen-instruct.json', 'r') as f:
         json_data = json.loads(f.read())
     items = parse_code_alpaca_instructions(json_data) # the items we want to send network requests to
     return items

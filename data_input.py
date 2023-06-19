@@ -24,6 +24,13 @@ def load_code_alpaca_20k():
     return items
 
 
+def load_codgen_instruct():
+    with open('data/codegen-instruction.json', 'r') as f:
+        json_data = json.loads(f.read())
+    items = parse_code_alpaca_instructions(json_data) # the items we want to send network requests to
+    return items
+
+
 def load_evolved_instruction():
     with open('evolved_instruction/responses.json', 'r') as f:
         items = json.loads(f.read())
@@ -31,7 +38,7 @@ def load_evolved_instruction():
 
 
 def load_dataset(path_or_name, max_num_item):
-    if path_or_name in ['code_alpaca_20k', 'code_alpaca', 'codealpaca']:
+    if path_or_name in ['code_alpaca_20k', 'code_alpaca', 'codealpaca', 'codegen_instruct', 'codegen-instruct']:
         return load_code_alpaca_20k()[:max_num_item]
     elif os.path.exists(path_or_name):
         with open(path_or_name, 'r') as f:

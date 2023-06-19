@@ -30,11 +30,11 @@ def load_evolved_instruction():
     return items
 
 
-def load_dataset(name):
-    if name in ['code_alpaca_20k', 'code_alpaca', 'codealpaca']:
-        return load_code_alpaca_20k()
-    elif os.path.exists(f'evolved_instruction/{name}.json'):
-        with open(f'evolved_instruction/{name}.json', 'r') as f:
-            return json.loads(f.read())
+def load_dataset(path_or_name, max_num_item):
+    if path_or_name in ['code_alpaca_20k', 'code_alpaca', 'codealpaca']:
+        return load_code_alpaca_20k()[:max_num_item]
+    elif os.path.exists(path_or_name):
+        with open(path_or_name, 'r') as f:
+            return json.loads(f.read())[:max_num_item]
     else:
-        raise FileNotFoundError(f'dataset {name} is not found in the preset or the evolved instruction directory, please check its existence and permission.')
+        raise FileNotFoundError(f'dataset {path_or_name} is not found in the preset or the evolved instruction directory, please check its existence and permission.')

@@ -38,8 +38,10 @@ def load_evolved_instruction():
 
 
 def load_dataset(path_or_name, max_num_item=9999999999):
-    if path_or_name in ['code_alpaca_20k', 'code_alpaca', 'codealpaca', 'codegen_instruct', 'codegen-instruct']:
+    if path_or_name in ['code_alpaca_20k', 'code_alpaca', 'codealpaca']:
         return load_code_alpaca_20k()[:max_num_item]
+    elif path_or_name in ['codegen_instruct', 'codegen-instruct']:
+        return load_codgen_instruct()[:max_num_item]
     elif os.path.exists(path_or_name):
         with open(path_or_name, 'r') as f:
             return json.loads(f.read())[:max_num_item]

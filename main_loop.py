@@ -13,25 +13,38 @@ num_retries = 3
 pause_between_retries = 5  # seconds
 max_concurrent_requests = 50  # Set the maximum concurrent requests
 
-items = load_dataset('code_alpaca_20k')
-responses = []
-processed_items = []
+dataset_name = 'code_alpaca_20k'
+round_number = 'round2'
+data_dir = 'evolved_instruction'
+max_num_item = 20
+items = load_dataset('evolved_instruction/code_alpaca_20k_round1_responses.json', max_num_item)
+
+# Configuration
+config = {
+    "processed_items_file_prefix": f'{data_dir}/{dataset_name}_',
+    "processed_items_file_postfix": round_number + '_',
+    "responses_file_prefix": f'{data_dir}/{dataset_name}_',
+    "responses_file_postfix": round_number + '_',
+}
+
+# Function to load data from JSON file
+def load_json_file(file_prefix, file_postfix, file_name):
+    try:
+        with open(f'{file_prefix}{file_postfix}{file_name}', 'r') as f:
+            data = json.load(f)
+            print(f'{file_name} len: {len(data)}')
+            return data
+    except FileNotFoundError:
+        return []
+
 
 # Load processed items if any
-try:
-    with open('processed_items.json', 'r') as f:
-        processed_items = json.load(f)
-        print(f'processed_items len: {len(processed_items)}')
-except FileNotFoundError:
-    pass
+processed_items = load_json_file(
+    config["processed_items_file_prefix"], config["processed_items_file_postfix"], 'processed_items.json')
 
 # Load responses if any
-try:
-    with open('responses.json', 'r') as f:
-        responses = json.load(f)
-        print(f'responses len: {len(responses)}')
-except FileNotFoundError:
-    pass
+responses = load_json_file(
+    config["responses_file_prefix"], config["responses_file_postfix"], 'responses.json')
 
 
 async def write_to_file(queue):
@@ -47,14 +60,14 @@ async def write_to_file(queue):
         responses.append(response)
 
         # Save responses with indentation
-        with open('responses.json', 'w') as f:
+        with open(f'{config["responses_file_prefix"]}{config["responses_file_postfix"]}responses.json', 'w') as f:
             json.dump(responses, f, indent=4)
 
         # append item to processed_items and save it
         processed_items.append(item)
         # Save processed items with indentation
-        with open('processed_items.json', 'w') as f:
-            json.dump(list(processed_items), f, indent=4)
+        with open(f'{config["processed_items_file_prefix"]}{config["processed_items_file_postfix"]}processed_items.json', 'w') as f:
+            json.dump(processed_items, f, indent=4)
 
         queue.task_done()  # Indicate that a formerly enqueued task is complete.
 

@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import aiohttp
 import json
@@ -7,24 +8,38 @@ from asyncio import Queue
 from evolve_instruct_code import RandomSystemPrompt
 from data_input import load_dataset
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--input_path', type=str, default='evolved_instruction/code_alpaca_20k_round1_responses.json')
+parser.add_argument('--output_name', type=str, default='code_alpaca_20k')
+parser.add_argument('--output_variant', type=str, default='solution')
+parser.add_argument('--save_dir', type=str, default='evolved_instruction')
+parser.add_argument('--num_retries', type=int, default=3)
+parser.add_argument('--pause_between_retries', type=int, default=5)
+parser.add_argument('--max_concurrent_requests', type=int, default=50)
+parser.add_argument('--request_mode', type=str, default='evolve')
+parser.add_argument('--max_num_input', type=int, default=9999999999)
+args = parser.parse_args()
+
 random_system_prompter = RandomSystemPrompt()
 
-num_retries = 3
-pause_between_retries = 5  # seconds
-max_concurrent_requests = 50  # Set the maximum concurrent requests
+# network request parameters
+num_retries = args.num_retries
+pause_between_retries = args.pause_between_retries # seconds
+max_concurrent_requests = args.max_concurrent_requests # max number of concurrent requests
 
-dataset_name = 'code_alpaca_20k'
-round_number = 'round2'
-data_dir = 'evolved_instruction'
-max_num_item = 20
-items = load_dataset('evolved_instruction/code_alpaca_20k_round1_responses.json', max_num_item)
+# dataset parameters
+output_name = args.output_name
+output_variant = args.output_variant
+data_dir = args.save_dir
+items = load_dataset(args.input_path, args.max_num_input)
 
 # Configuration
 config = {
-    "processed_items_file_prefix": f'{data_dir}/{dataset_name}_',
-    "processed_items_file_postfix": round_number + '_',
-    "responses_file_prefix": f'{data_dir}/{dataset_name}_',
-    "responses_file_postfix": round_number + '_',
+    "processed_items_file_prefix": f'{data_dir}/{output_name}_',
+    "processed_items_file_postfix": output_variant + '_',
+    "responses_file_prefix": f'{data_dir}/{output_name}_',
+    "responses_file_postfix": output_variant + '_',
 }
 
 # Function to load data from JSON file
@@ -72,7 +87,7 @@ async def write_to_file(queue):
         queue.task_done()  # Indicate that a formerly enqueued task is complete.
 
 
-async def send_request(session, item, queue, semaphore):
+async def send_evolve_request(session, item, queue, semaphore):
     if item in processed_items:
         return
 
@@ -88,6 +103,41 @@ async def send_request(session, item, queue, semaphore):
                 "model": "gpt-3.5-turbo-0613",
                 "messages": [
                     {"role": "system", "content": random_system_prompter()},
+                    {"role": "user", "content": item}
+                ]
+            }
+            
+            async with session.post(url, headers=headers, data=json.dumps(payload)) as response:
+                response.raise_for_status()
+                data = await response.json()
+                response_content = data['choices'][0]['message']['content']
+                # Add response and item to queue
+                await queue.put((response_content, item))
+            break
+        except aiohttp.ClientError as e:
+            semaphore.release()  # Release the lock before sleeping
+            print(f"Request failed for {item} with error {e}, attempt {i+1}")
+            await asyncio.sleep(pause_between_retries)
+        finally:
+            semaphore.release()  # Release the lock if not retrying
+
+
+async def send_code_request(session, item, queue, semaphore):
+    if item in processed_items:
+        return
+
+    for i in range(num_retries):
+        await semaphore.acquire()  # Manually acquire the lock
+        try:
+            url = "https://api.openai.com/v1/chat/completions"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {os.environ.get('OPENAI_API_KEY')}"
+            }
+            payload = {
+                "model": "gpt-3.5-turbo-0613",
+                "messages": [
+                    {"role": "system", "content": 'You are expert in coding. Please write code to solve the following problem.'},
                     {"role": "user", "content": item}
                 ]
             }
@@ -132,7 +182,10 @@ async def main():
     semaphore = asyncio.Semaphore(max_concurrent_requests)
 
     async with aiohttp.ClientSession() as session:
-        tasks = [asyncio.create_task(send_request(session, item, queue, semaphore)) for item in items]
+        if args.request_mode == 'evolve':
+            tasks = [asyncio.create_task(send_evolve_request(session, item, queue, semaphore)) for item in items]
+        elif args.request_mode == 'code':
+            tasks = [asyncio.create_task(send_code_request(session, item, queue, semaphore)) for item in items]
         # create write_to_file task
         file_writer = asyncio.create_task(write_to_file(queue))
         await asyncio.gather(*tasks, return_exceptions=True)
